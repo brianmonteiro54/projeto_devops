@@ -29,8 +29,12 @@ const express = require('express');
                 database: process.env.DB_DATABASE,
                 password: process.env.DB_PASSWORD,
                 port: process.env.DB_PORT || 5432,
-            })
-            await client.connect()
+                ssl: {
+                    ca: fs.readFileSync('/App/us-east-1-bundle.pem').toString(), 
+                    rejectUnauthorized: true  
+                }
+            });
+            await client.connect();
 
             const result = await client.query('SELECT version()')
             const version = result.rows[0].version

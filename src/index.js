@@ -1,5 +1,7 @@
 const { Client } = require('pg');
 const express = require('express');
+const fs = require('fs');
+
 
 (async () => {
     const app = express()
@@ -35,6 +37,7 @@ const express = require('express');
                 }
             });
             await client.connect();
+
 
             const result = await client.query('SELECT version()')
             const version = result.rows[0].version

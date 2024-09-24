@@ -1,7 +1,5 @@
 const { Client } = require('pg');
 const express = require('express');
-const fs = require('fs');
-
 
 (async () => {
     const app = express()
@@ -26,18 +24,13 @@ const fs = require('fs');
     app.get('/connect', async (req, res) => {
         try {
             const client = new Client({
-                user: process.env.DB_USERNAME,
-                host: process.env.DB_ENDPOINT,
+                user: process.env.DB_USER,
+                host: process.env.DB_HOST,
                 database: process.env.DB_DATABASE,
                 password: process.env.DB_PASSWORD,
                 port: process.env.DB_PORT || 5432,
-                ssl: {
-                    ca: fs.readFileSync('/App/us-east-1-bundle.pem').toString(), 
-                    rejectUnauthorized: true  
-                }
-            });
-            await client.connect();
-
+            })
+            await client.connect()
 
             const result = await client.query('SELECT version()')
             const version = result.rows[0].version

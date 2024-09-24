@@ -1,6 +1,3 @@
-# Arquivo com o certificado SSL
-us-east-1-bundle.pem
-
 # Logs
 logs
 *.log

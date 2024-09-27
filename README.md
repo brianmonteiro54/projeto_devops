@@ -53,7 +53,7 @@ O comando para iniciar a API é **npm run start**
 | --- |  --- |  --- |
 API_PORT | Port da API Node | 3000
 DB_DATABASE | Database do banco de dados | 
-DB_HOST | Endereço do banco de dados | 
+DB_ENDPOINT | Endereço do banco de dados | 
 DB_PORT | Port do banco de dados | 5432
-DB_USER | Usuário do banco de dados | 
+DB_USERNAME | Usuário do banco de dados | 
 DB_PASSWORD | Senha do banco de dados | 

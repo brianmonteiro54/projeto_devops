@@ -2,7 +2,9 @@
 
 ## Objetivo
 
-O objetivo deste desafio é desenvolver um ambiente de produção robusto e escalável para uma API Node.js, incorporando as melhores práticas de engenharia de software e infraestrutura. Este projeto é uma oportunidade para demonstrar habilidades em áreas fundamentais, como alta disponibilidade, segurança, contêinerização, automação e provisionamento de infraestrutura.
+O objetivo deste desafio é desenvolver um ambiente de produção robusto e escalável para uma API Node.js. Este projeto é uma oportunidade para demonstrar habilidades em áreas fundamentais, como alta disponibilidade, segurança, contêinerização, automação e provisionamento de infraestrutura.
+
+Este projeto utiliza Terraform para provisionar e configurar a infraestrutura necessária para um ambiente de produção e escalável para uma API Node.js. Toda a infraestrutura é definida no diretório **iac**.
 
 ## Requisitos
 
@@ -32,6 +34,14 @@ O objetivo deste desafio é desenvolver um ambiente de produção robusto e esca
 - Certificar-se de que toda a comunicação entre os recursos (API, banco de dados, serviços internos) ocorra de forma segura.
 - Implementar o uso de certificados **SSL** e seguir outras práticas recomendadas de segurança para proteger os dados em trânsito.
 
+## Configuração do Pipeline
+
+Caso você clone este projeto e deseje utilizar um pipeline CI/CD, é necessário configurar variáveis de ambiente seguras no GitHub Secrets para armazenar credenciais. As variáveis necessárias são:
+
+- `AWS_ACCESS_KEY_ID`
+- `AWS_SECRET_ACCESS_KEY`
+- `AWS_REGION`
+- `PRIVATE_KEY` (colocar a chave do certificado SSL)
 
 # simple-api
 

@@ -12,7 +12,6 @@ Este projeto provisiona os seguintes recursos na AWS:
 - **ECR**: Registro de imagens Docker com **scan_on_push** ativado
 - **ECS**: Cluster para execução de containers
 - **S3**: Buckets para logs de auditoria do **CloudTrail** e armazenamento do **tfstate**
-- **NAT Gateway** e **Internet Gateway**
 - **GuardDuty**: Análise de anomalias de IAM
 - **IAM Roles e Policies**: Perfis de acesso configurados para os serviços EC2, ECS, Secrets Manager e Parameter Store, com políticas detalhadas para cada um:
   - **Role para EC2**: Permite que instâncias EC2 utilizem o AWS Systems Manager (SSM) para gerenciamento, com a política `AmazonSSMManagedInstanceCore` anexada.
@@ -31,6 +30,7 @@ Este projeto provisiona os seguintes recursos na AWS:
 - **Sub-redes e tabelas de rotas**: Para isolamento da infraestrutura
 - **Endpoints para VPC**: Integração com serviços AWS, incluindo **ECR**, **ECS**
 - **NAT Gateway**: Gateway para saída de tráfego da VPC
+- **Internet Gateway**: Gateway que permite a conectividade entre a VPC e a internet pública.
 - **Parameter Store**: Armazena o nome do banco de dados, endpoint do RDS e porta do banco de dados
 - **Secret Manager**: Armazena o username e password do banco de dados
 - **EC2**: Instância para VPN usando Pritunl

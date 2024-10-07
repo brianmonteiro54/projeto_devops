@@ -27,7 +27,7 @@ Este projeto provisiona os seguintes recursos na AWS:
   - Regra 5: Bloqueia entradas de dados conhecidamente maliciosos
   - Regra 6: Proteção contra injeção SQL no GuardDuty
   - Regra 7: Criar um filtro para anomalias de IAM no GuardDuty
-- **Route53**: Gerenciamento de registros DNS (não cria a zona hospedada, apenas os registros necessários para ACM e Load Balancer)
+- **Route53**: Gerenciamento de registros DNS (não cria a zona hospedada, apenas os registros necessários para ACM, Load Balancer e EC2)
 - **Sub-redes e tabelas de rotas**: Para isolamento da infraestrutura
 - **Endpoints para VPC**: Integração com serviços AWS, incluindo **ECR**, **ECS**
 - **NAT Gateway**: Gateway para saída de tráfego da VPC

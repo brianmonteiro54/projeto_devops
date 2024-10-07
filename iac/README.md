@@ -2,6 +2,99 @@
 
 ![](/iac/diagram/arquitetura.jpg)
 
+## Recursos
+
+Este projeto provisiona os seguintes recursos na AWS:
+
+- **ACM**: Certificado SSL
+- **CloudTrail**: Monitoramento de eventos, com logs armazenados em bucket S3 específico
+- **RDS**: Banco de Dados PostgreSQL com Multi-AZ e criptografia
+- **ECR**: Registro de imagens Docker com **scan_on_push** ativado
+- **ECS**: Cluster para execução de containers
+- **S3**: Buckets para logs de auditoria do **CloudTrail** e armazenamento do **tfstate**
+- **NAT Gateway** e **Internet Gateway**
+- **GuardDuty**: Análise de anomalias de IAM
+- **IAM Roles e Policies**: Perfis de acesso configurados para os serviços EC2, ECS, Secrets Manager e Parameter Store, com políticas detalhadas para cada um:
+  - **Role para EC2**: Permite que instâncias EC2 utilizem o AWS Systems Manager (SSM) para gerenciamento, com a política `AmazonSSMManagedInstanceCore` anexada.
+  - **Role para ECS Task Execution**: Permite que as tarefas ECS assumam permissões necessárias para executar containers e registrar logs no CloudWatch.
+  - **Role para Secrets Manager e Parameter Store**: Permite que tarefas ECS acessem segredos específicos no Secrets Manager e parâmetros no SSM, garantindo segurança no acesso aos recursos sensíveis.
+- **Load Balancer**: Distribuição de tráfego para containers
+- **WAF**: Firewall para proteção da aplicação, com as seguintes regras:
+  - Regra 1: Proteção para áreas administrativas
+  - Regra 2: Proteção contra IPs maliciosos conhecidos
+  - Regra 3: Proteção contra IPs anônimos (proxies, VPNs, etc.)
+  - Regra 4: Conjunto de regras comuns para proteção geral
+  - Regra 5: Bloqueia entradas de dados conhecidamente maliciosos
+  - Regra 6: Proteção contra injeção SQL no GuardDuty
+  - Regra 7: Criar um filtro para anomalias de IAM no GuardDuty
+- **Route53**: Gerenciamento de registros DNS (não cria a zona hospedada, apenas os registros necessários para ACM e Load Balancer)
+- **Sub-redes e tabelas de rotas**: Para isolamento da infraestrutura
+- **Endpoints para VPC**: Integração com serviços AWS, incluindo **ECR**, **ECS**
+- **NAT Gateway**: Gateway para saída de tráfego da VPC
+- **Parameter Store**: Armazena o nome do banco de dados, endpoint do RDS e porta do banco de dados
+- **Secret Manager**: Armazena o username e password do banco de dados
+- **EC2**: Instância para VPN usando Pritunl
+
+## Passo-a-Passo para Provisionamento
+
+Siga as instruções abaixo para provisionar a infraestrutura usando Terraform:
+
+1. **Clonar o repositório:**
+   ```bash
+   git clone https://github.com/brianmonteiro54/projeto_devops.git
+   cd projeto_devops/iac
+   ```
+
+2. **Configurar o perfil AWS:**
+   Este projeto está configurado para usar o perfil AWS chamado **brian**. Você tem duas opções:
+    - **Criar um perfil AWS chamado brian**:
+     - Execute o comando abaixo e siga as instruções para configurar o perfil:
+       ```bash
+       aws configure --profile brian
+       ```
+     - Forneça as credenciais (Access Key ID e Secret Access Key), região e formato de saída preferido.
+        
+        **OU**
+
+   - **Alterar para o perfil default**:
+     - Abra o arquivo `provider.tf` e substitua `profile = "brian"` por `profile = "default"` ou remova completamente essa linha para usar o perfil default.
+
+4. **Backend do Terraform**
+Este projeto está configurado para armazenar o **state file** do Terraform em um bucket S3. A configuração atual do backend está definida no arquivo `state_config.tf`:
+
+```hcl
+terraform {
+  backend "s3" {
+    bucket  = "brian-terraform"
+    key     = "api-node/terraform.tfstate"
+    region  = "us-east-1"
+    profile = "brian"
+  }
+}
+```
+É necessário alterar o nome do bucket (`brian-terraform`) para um bucket que você tenha permissão para utilizar. Caso queira utilizar o perfil default, altere o `profile` para `default` ou remova essa linha.
+
+5. **Inicializar o Terraform:**
+   ```bash
+   terraform init
+   ```
+
+6. **Verificar o plano de execução:**
+   ```bash
+   terraform plan
+   ```
+   Este comando mostrará o que será provisionado e os detalhes de cada recurso que será criado.
+
+7. **Aplicar o plano:**
+   ```bash
+   terraform apply
+   ```
+   Digite `yes` para confirmar e aplicar o plano. O Terraform então criará os recursos listados acima.
+
+## Considerações sobre VPN (Pritunl)
+
+A instância EC2 configurada com Pritunl está sendo usada como VPN para a arquitetura. Atualmente, este projeto contempla apenas o ambiente de produção. No entanto, em um ambiente de uma empresa real, é recomendável ter os ambientes de **produção** e **staging** separados. A VPN foi criada para fornecer acesso seguro ao ambiente de **staging**, que não seria aberto à internet pública. Dessa forma, qualquer teste da aplicação seria feito com segurança antes de ser lançado no ambiente de produção.
+
 ## Requirements
 
 | Name | Version |

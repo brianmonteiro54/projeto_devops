@@ -4,7 +4,7 @@
 
 O objetivo deste desafio é desenvolver um ambiente de produção robusto e escalável para uma API Node.js. Este projeto é uma oportunidade para demonstrar habilidades em áreas fundamentais, como alta disponibilidade, segurança, contêinerização, automação e provisionamento de infraestrutura.
 
-Este projeto utiliza Terraform para provisionar e configurar a infraestrutura necessária para um ambiente de produção e escalável para uma API Node.js. Toda a infraestrutura é definida no diretório **iac**.
+Este projeto utiliza Terraform para provisionar e configurar a infraestrutura necessária para um ambiente de produção e escalável para uma API Node.js. Toda a infraestrutura é definida no diretório **iac**
 
 ## Requisitos
 

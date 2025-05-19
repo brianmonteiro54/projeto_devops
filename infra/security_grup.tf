@@ -5,8 +5,8 @@ resource "aws_security_group" "Pritunl_VPN" {
   vpc_id      = aws_vpc.terraform_vpc.id
 
   tags = {
-    "environment" = var.tag_prod
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
     "Name"        = "Pritunl_VPN"
   }
 }
@@ -52,23 +52,23 @@ resource "aws_vpc_security_group_egress_rule" "egress_all_traffic_ec2" {
 #--------------------------------------------------------------------
 
 #security grupo da RDS
-resource "aws_security_group" "api_db" {
-  name        = "api_db-tf"
-  description = "Regra para a instancia do RDS api-db com tf"
+resource "aws_security_group" "rds_db" {
+  name        = "rds_db-tf"
+  description = "Regra para a instancia do RDS rds-db com tf"
   vpc_id      = aws_vpc.terraform_vpc.id
 
   tags = {
-    "environment" = var.tag_prod
-    "ambiente"    = var.tag_ambiente
-    "Name"        = "api_db"
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
+    "Name"        = "rds_db"
   }
 }
 
 #regra de entrada do RDS
 resource "aws_vpc_security_group_ingress_rule" "ingress_rds_5432_alb" {
   description                  = "Permitir alb"
-  security_group_id            = aws_security_group.api_db.id
-  referenced_security_group_id = aws_security_group.alb_production.id
+  security_group_id            = aws_security_group.rds_db.id
+  referenced_security_group_id = aws_security_group.alb.id
   from_port                    = 5432
   ip_protocol                  = "tcp"
   to_port                      = 5432
@@ -76,8 +76,8 @@ resource "aws_vpc_security_group_ingress_rule" "ingress_rds_5432_alb" {
 
 resource "aws_vpc_security_group_ingress_rule" "ingress_rds_5432_ecs" {
   description                  = "Permitir ecs"
-  security_group_id            = aws_security_group.api_db.id
-  referenced_security_group_id = aws_security_group.api-ecs.id
+  security_group_id            = aws_security_group.rds_db.id
+  referenced_security_group_id = aws_security_group.ecs-sg.id
   from_port                    = 5432
   ip_protocol                  = "tcp"
   to_port                      = 5432
@@ -85,7 +85,7 @@ resource "aws_vpc_security_group_ingress_rule" "ingress_rds_5432_ecs" {
 
 #regra de saida do RDS
 resource "aws_vpc_security_group_egress_rule" "egress_all_traffic" {
-  security_group_id = aws_security_group.api_db.id
+  security_group_id = aws_security_group.rds_db.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
@@ -93,21 +93,21 @@ resource "aws_vpc_security_group_egress_rule" "egress_all_traffic" {
 # ------------------------------------------------------------------------------------------------------------------
 
 #security grupo da ALB
-resource "aws_security_group" "alb_production" {
+resource "aws_security_group" "alb" {
   name        = "alb_api-tf"
   description = "Regra para Load Balancer"
   vpc_id      = aws_vpc.terraform_vpc.id
 
   tags = {
-    "environment" = var.tag_prod
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
     "Name"        = "api_alb"
   }
 }
 #regra de entrada do ALB
 resource "aws_vpc_security_group_ingress_rule" "ingress_alb_80" {
   description       = "Liberado para o mundo"
-  security_group_id = aws_security_group.alb_production.id
+  security_group_id = aws_security_group.alb.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 80
   ip_protocol       = "tcp"
@@ -116,7 +116,7 @@ resource "aws_vpc_security_group_ingress_rule" "ingress_alb_80" {
 #regra de entrada do ALB
 resource "aws_vpc_security_group_ingress_rule" "ingress_alb_443" {
   description       = "Liberado para o mundo"
-  security_group_id = aws_security_group.alb_production.id
+  security_group_id = aws_security_group.alb.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 443
   ip_protocol       = "tcp"
@@ -125,7 +125,7 @@ resource "aws_vpc_security_group_ingress_rule" "ingress_alb_443" {
 
 #regra de saida do ALB
 resource "aws_vpc_security_group_egress_rule" "egress_all_traffic_alb" {
-  security_group_id = aws_security_group.alb_production.id
+  security_group_id = aws_security_group.alb.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # semantically equivalent to all ports
 }
@@ -134,14 +134,14 @@ resource "aws_vpc_security_group_egress_rule" "egress_all_traffic_alb" {
 # ------------------------------------------------------------------------------------------------------------------
 
 #security grupo do ECS
-resource "aws_security_group" "api-ecs" {
-  name        = "api-ecs-tf"
+resource "aws_security_group" "ecs-sg" {
+  name        = "ecs-sg-tf"
   description = "Regra para o fargate do ecs"
   vpc_id      = aws_vpc.terraform_vpc.id
 
   tags = {
-    "environment" = var.tag_prod
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
     "Name"        = "api_ecs"
 
   }
@@ -149,8 +149,8 @@ resource "aws_security_group" "api-ecs" {
 #regra de entrada do ECS
 resource "aws_vpc_security_group_ingress_rule" "ingress_ecs" {
   description                  = "Liberado para o alb"
-  security_group_id            = aws_security_group.api-ecs.id
-  referenced_security_group_id = aws_security_group.alb_production.id
+  security_group_id            = aws_security_group.ecs-sg.id
+  referenced_security_group_id = aws_security_group.alb.id
   from_port                    = 3000
   to_port                      = 3000
   ip_protocol                  = "tcp"
@@ -158,7 +158,7 @@ resource "aws_vpc_security_group_ingress_rule" "ingress_ecs" {
 
 resource "aws_vpc_security_group_ingress_rule" "ingress_ecs_endpoint" {
   description       = "Liberado ssl para os endpoint"
-  security_group_id = aws_security_group.api-ecs.id
+  security_group_id = aws_security_group.ecs-sg.id
   cidr_ipv4         = "0.0.0.0/0"
   from_port         = 443
   to_port           = 443
@@ -168,7 +168,7 @@ resource "aws_vpc_security_group_ingress_rule" "ingress_ecs_endpoint" {
 
 #regra de saida do ECS
 resource "aws_vpc_security_group_egress_rule" "egress_all_traffic_ecs" {
-  security_group_id = aws_security_group.api-ecs.id
+  security_group_id = aws_security_group.ecs-sg.id
   cidr_ipv4         = "0.0.0.0/0"
   ip_protocol       = "-1" # semantically equivalent to all ports
 }

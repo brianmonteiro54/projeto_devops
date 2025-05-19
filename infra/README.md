@@ -1,6 +1,6 @@
 ## Arquitetura
 
-![](/iac/diagram/arquitetura.jpg)
+![](/infra/diagram/arquitetura.jpg)
 
 ## Recursos
 
@@ -35,61 +35,29 @@ Este projeto provisiona os seguintes recursos na AWS:
 - **Secret Manager**: Armazena o username e password do banco de dados
 - **EC2**: Instância para VPN usando Pritunl
 
-## Passo-a-Passo para Provisionamento
+## Custos Estimados da Infraestrutura AWS — Ambiente de Produção
 
-Siga as instruções abaixo para provisionar a infraestrutura usando Terraform:
+Este projeto utiliza o [Infracost](https://www.infracost.io/) para estimar os custos mensais da infraestrutura provisionada via Terraform, facilitando a transparência financeira e o controle orçamentário.
 
-1. **Clonar o repositório:**
-   ```bash
-   git clone https://github.com/brianmonteiro54/projeto_devops.git
-   cd projeto_devops/iac
-   ```
+### Resumo do Custo Mensal Estimado (Maio 2025)
 
-2. **Configurar o perfil AWS:**
-   Este projeto está configurado para usar o perfil AWS chamado **brian**. Você tem duas opções:
-    - **Criar um perfil AWS chamado brian**:
-     - Execute o comando abaixo e siga as instruções para configurar o perfil:
-       ```bash
-       aws configure --profile brian
-       ```
-     - Forneça as credenciais (Access Key ID e Secret Access Key), região e formato de saída preferido.
-        
-        **OU**
+| Serviço / Recurso                   | Custo Mensal Estimado (USD) |
+|-----------------------------------|-----------------------------:|
+| **ECS Service (CPU & Memória)**   | $144.16                      |
+| **NAT Gateway (2 unidades)**       | $65.70                       |
+| **RDS Multi-AZ (db.t3.micro)**    | $30.88                       |
+| **Application Load Balancer (ALB)** | $16.43                      |
+| **Instância EC2 VPN (t4g.micro)** | $6.93                        |
+| **VPC Endpoints (ECR, ECS, etc.)** | $43.80                      |
+| **WAF (Web ACL)**                 | $5.00                        |
+| **Outros Recursos e Uso Variável** | —                           |
+| **Total Aproximado**              | **$312.90**                  |
 
-   - **Alterar para o perfil default**:
-     - Abra o arquivo `provider.tf` e substitua `profile = "brian"` por `profile = "default"` ou remova completamente essa linha para usar o perfil default.
+> Estes valores são baseados em estimativas de uso médio mensal e refletem o custo esperado para o ambiente de produção.
 
-4. **Backend do Terraform**
-Este projeto está configurado para armazenar o **state file** do Terraform em um bucket S3. A configuração atual do backend está definida no arquivo `state_config.tf`:
+### Relatório Completo de Custos
 
-```hcl
-terraform {
-  backend "s3" {
-    bucket  = "brian-terraform"
-    key     = "api-node/terraform.tfstate"
-    region  = "us-east-1"
-    profile = "brian"
-  }
-}
-```
-É necessário alterar o nome do bucket (`brian-terraform`) para um bucket que você tenha permissão para utilizar. Caso queira utilizar o perfil default, altere o `profile` para `default` ou remova essa linha.
-
-5. **Inicializar o Terraform:**
-   ```bash
-   terraform init
-   ```
-
-6. **Verificar o plano de execução:**
-   ```bash
-   terraform plan
-   ```
-   Este comando mostrará o que será provisionado e os detalhes de cada recurso que será criado.
-
-7. **Aplicar o plano:**
-   ```bash
-   terraform apply
-   ```
-   Digite `yes` para confirmar e aplicar o plano. O Terraform então criará os recursos listados acima.
+O relatório detalhado, gerado automaticamente via Infracost, está disponível no arquivo [`report.html`](https://edn.0p.pt/terraform/report.html). Ele inclui a análise granular de cada recurso e suas componentes de custo, além de custos dependentes de uso.
 
 ## Considerações sobre VPN (Pritunl)
 

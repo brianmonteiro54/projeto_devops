@@ -1,11 +1,11 @@
-name: Build & Deploy - Production
+name: Build & Deploy - development
 
 on:
   repository_dispatch:
-    types: [deploy-production]
+    types: [deploy-development]
   push:
     branches:
-      - main  
+      - develop 
 
 jobs:
   workflow:
@@ -13,11 +13,11 @@ jobs:
 
 
     with:
-      IMAGE_NAME: api-production
-      TASK_NAME: api-production
-      CONTAINER_NAME: api-production
-      ECS_SERVICE: api-production
-      ECS_CLUSTER: production
+      IMAGE_NAME: api-development
+      TASK_NAME: api-development
+      CONTAINER_NAME: api-development
+      ECS_SERVICE: api-development
+      ECS_CLUSTER: development
     secrets:
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

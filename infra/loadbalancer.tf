@@ -1,23 +1,23 @@
 # Load Balancer
-resource "aws_lb" "production" {
-  name               = "production"
+resource "aws_lb" "alb" {
+  name               = var.alb_name
   internal           = false # Internet-facing
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb_production.id]
+  security_groups    = [aws_security_group.alb.id]
   subnets            = [aws_subnet.public_subnet_1.id, aws_subnet.public_subnet_2.id]
 
   enable_deletion_protection = false
   ip_address_type            = "ipv4"
 
   tags = {
-    Name        = "production"
-    Environment = "Production"
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
 # Listener HTTP (port 80)
 resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.production.arn
+  load_balancer_arn = aws_lb.alb.arn
   port              = 80
   protocol          = "HTTP"
 
@@ -37,7 +37,7 @@ resource "aws_lb_listener" "http" {
 
 # Target Group
 resource "aws_lb_target_group" "ecs_api" {
-  name        = "ecs-api"
+  name        = var.alb_target_group_name
   port        = 80
   protocol    = "HTTP"
   vpc_id      = aws_vpc.terraform_vpc.id
@@ -54,13 +54,14 @@ resource "aws_lb_target_group" "ecs_api" {
   }
 
   tags = {
-    Name = "ecs-api"
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
 # Listener HTTPS (port 443)
 resource "aws_lb_listener" "https" {
-  load_balancer_arn = aws_lb.production.arn
+  load_balancer_arn = aws_lb.alb.arn
   port              = 443
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
@@ -75,12 +76,12 @@ resource "aws_lb_listener" "https" {
 # Registro no Route 53
 resource "aws_route53_record" "alb_record" {
   zone_id = data.aws_route53_zone.domain_zone.zone_id # Usando a zona existente
-  name    = var.domain_name
+  name    = local.full_domain_name
   type    = "A"
 
   alias {
-    name                   = aws_lb.production.dns_name
-    zone_id                = aws_lb.production.zone_id
+    name                   = aws_lb.alb.dns_name
+    zone_id                = aws_lb.alb.zone_id
     evaluate_target_health = true
   }
 }

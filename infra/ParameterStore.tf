@@ -3,11 +3,11 @@ resource "aws_ssm_parameter" "db_database" {
   name        = "/api/db_database"
   description = "Nome do banco de dados"
   type        = "String"
-  value       = aws_db_instance.rds_api.db_name
+  value       = aws_db_instance.rds.db_name
 
   tags = {
-    "environment" = var.tag_prod
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
@@ -16,11 +16,11 @@ resource "aws_ssm_parameter" "db_endpoint" {
   name        = "/api/db_endpoint"
   description = "Endpoint do banco de dados"
   type        = "String"
-  value       = split(":", aws_db_instance.rds_api.endpoint)[0] #Pega apenas o endpoint
+  value       = split(":", aws_db_instance.rds.endpoint)[0] #Pega apenas o endpoint
 
   tags = {
-    "environment" = var.tag_prod
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
@@ -29,10 +29,10 @@ resource "aws_ssm_parameter" "db_port" {
   name        = "/api/db_port"
   description = "Porta do banco de dados"
   type        = "String"
-  value       = aws_db_instance.rds_api.port
+  value       = aws_db_instance.rds.port
 
   tags = {
-    "environment" = var.tag_prod
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }

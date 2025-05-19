@@ -9,8 +9,8 @@ resource "aws_acm_certificate" "domain_cert" {
 
   tags = {
     "Name"        = var.domain_name
-    "environment" = var.tag_prod
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 
   lifecycle {

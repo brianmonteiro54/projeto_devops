@@ -1,6 +1,6 @@
-resource "aws_wafv2_web_acl" "production" {
-  name        = "production"
-  description = "regra do waf para prod"
+resource "aws_wafv2_web_acl" "web_acl" {
+  name        = var.waf_acl_name
+  description = var.waf_description
   scope       = "REGIONAL"
 
   default_action {
@@ -9,7 +9,7 @@ resource "aws_wafv2_web_acl" "production" {
 
   visibility_config {
     cloudwatch_metrics_enabled = true
-    metric_name                = "production"
+    metric_name                = var.waf_metric_name
     sampled_requests_enabled    = true
   }
   # Regra 1: Proteção para áreas administrativas
@@ -151,10 +151,15 @@ resource "aws_wafv2_web_acl" "production" {
       sampled_requests_enabled    = true
     }
   }
+
+  tags = {
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
+  }
 }
 
 #Associar WAF ao ALB
 resource "aws_wafv2_web_acl_association" "alb" {
-  resource_arn = aws_lb.production.arn
-  web_acl_arn  = aws_wafv2_web_acl.production.arn
+  resource_arn = aws_lb.alb.arn
+  web_acl_arn  = aws_wafv2_web_acl.web_acl.arn
 }

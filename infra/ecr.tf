@@ -1,14 +1,19 @@
-resource "aws_ecr_repository" "api_production" {
+resource "aws_ecr_repository" "app_ecr" {
   name                 = var.ecr_name
   image_tag_mutability = "MUTABLE"
   force_delete         = true #Força deletar as imagem de container quando faz o destroy
   image_scanning_configuration {
     scan_on_push = true # Habilita o scan de imagem quando a imagem é enviada para o repositório
   }
+
+  tags = {
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
+  }
 }
 
 # Adicionando configuração de escaneamento para o repositório
-resource "aws_ecr_registry_scanning_configuration" "api_production_scanning" {
+resource "aws_ecr_registry_scanning_configuration" "app_ecr_scanning" {
   scan_type = "ENHANCED" # Usar escaneamento aprimorado
 
   rule {
@@ -21,8 +26,8 @@ resource "aws_ecr_registry_scanning_configuration" "api_production_scanning" {
 }
 
 # política de ciclo de vida
-resource "aws_ecr_lifecycle_policy" "api_production_lifecycle" {
-  repository = aws_ecr_repository.api_production.name
+resource "aws_ecr_lifecycle_policy" "app_ecr_lifecycle" {
+  repository = aws_ecr_repository.app_ecr.name
 
   policy = <<EOF
 {

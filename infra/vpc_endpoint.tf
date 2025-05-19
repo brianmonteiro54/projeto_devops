@@ -6,7 +6,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
 
   # Adicione seus grupos de segurança aqui
   security_group_ids = [
-    aws_security_group.api-ecs.id
+    aws_security_group.ecs-sg.id
   ]
 
   # Adicione suas sub-redes aqui
@@ -16,8 +16,8 @@ resource "aws_vpc_endpoint" "ecr_api" {
   ]
 
   tags = {
-    "environment" = var.tag_prod,
-    "ambiente"    = var.tag_ambiente,
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
     "Name"        = "ecr.api"
   }
 
@@ -32,7 +32,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
 
   # Adicione seus grupos de segurança aqui
   security_group_ids = [
-    aws_security_group.api-ecs.id
+    aws_security_group.ecs-sg.id
   ]
 
   # Adicione suas sub-redes aqui
@@ -42,8 +42,8 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   ]
 
   tags = {
-    "environment" = var.tag_prod,
-    "ambiente"    = var.tag_ambiente,
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
     "Name"        = "ecr.dkr"
   }
 
@@ -57,7 +57,7 @@ resource "aws_vpc_endpoint" "ecs" {
 
   # Adicione seus grupos de segurança aqui
   security_group_ids = [
-    aws_security_group.api-ecs.id
+    aws_security_group.ecs-sg.id
   ]
 
   # Adicione suas sub-redes aqui
@@ -67,8 +67,8 @@ resource "aws_vpc_endpoint" "ecs" {
   ]
 
   tags = {
-    "environment" = var.tag_prod,
-    "ambiente"    = var.tag_ambiente,
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
     "Name"        = "ecs"
   }
 

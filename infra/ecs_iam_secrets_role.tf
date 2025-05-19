@@ -28,7 +28,7 @@ resource "aws_iam_policy" "ecsSecretsAccessPolicy" {
         Action = [
           "secretsmanager:GetSecretValue"
         ]
-        Resource = tolist(aws_db_instance.rds_api.master_user_secret)[0].secret_arn
+        Resource = tolist(aws_db_instance.rds.master_user_secret)[0].secret_arn
       },
       {
         Effect = "Allow"

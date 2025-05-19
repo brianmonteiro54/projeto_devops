@@ -1,9 +1,9 @@
 # Criar VPC
 resource "aws_vpc" "terraform_vpc" {
-  cidr_block = "172.80.0.0/16"
+  cidr_block = var.vpc_cidr_block
   tags = {
-    "environment" = var.tag_prod,
-    "ambiente"    = var.tag_ambiente,
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
     "Name"        = var.vpc_name
   }
 }
@@ -12,63 +12,63 @@ resource "aws_vpc" "terraform_vpc" {
 resource "aws_internet_gateway" "terraform_igw" {
   vpc_id = aws_vpc.terraform_vpc.id
   tags = {
-    "environment" = var.tag_prod,
-    "ambiente"    = var.tag_ambiente
-    "Name"        = "igw-production"
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
+    Name        = "igw-${var.tag_environment}"
   }
 }
 
 # Subnets Públicas
 resource "aws_subnet" "public_subnet_1" {
   vpc_id            = aws_vpc.terraform_vpc.id
-  cidr_block        = "172.80.1.0/24"
-  availability_zone = "us-east-1a"
+  cidr_block        = var.public_subnet_cidrs[0]
+  availability_zone = var.availability_zones[0]
 
   map_public_ip_on_launch = true
 
   tags = {
     Name          = "public-subnet-1-terraform"
-    "environment" = var.tag_prod,
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
 resource "aws_subnet" "public_subnet_2" {
   vpc_id            = aws_vpc.terraform_vpc.id
-  cidr_block        = "172.80.2.0/24"
-  availability_zone = "us-east-1b"
+  cidr_block        = var.public_subnet_cidrs[1]
+  availability_zone = var.availability_zones[1]
 
   map_public_ip_on_launch = true
 
   tags = {
     Name          = "public-subnet-2-terraform"
-    "environment" = var.tag_prod,
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
 # Subnets Privadas
 resource "aws_subnet" "private_subnet_1" {
   vpc_id            = aws_vpc.terraform_vpc.id
-  cidr_block        = "172.80.3.0/24"
-  availability_zone = "us-east-1a"
+  cidr_block        = var.private_subnet_cidrs[0]
+  availability_zone = var.availability_zones[0]
 
   tags = {
     Name          = "private-subnet-1-terraform"
-    "environment" = var.tag_prod,
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
 resource "aws_subnet" "private_subnet_2" {
   vpc_id            = aws_vpc.terraform_vpc.id
-  cidr_block        = "172.80.4.0/24"
-  availability_zone = "us-east-1b"
+  cidr_block        = var.private_subnet_cidrs[1]
+  availability_zone = var.availability_zones[1]
 
   tags = {
     Name          = "private-subnet-2-terraform"
-    "environment" = var.tag_prod,
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
@@ -83,8 +83,8 @@ resource "aws_route_table" "public_route_table" {
 
   tags = {
     Name          = "public-route-table"
-    "environment" = var.tag_prod,
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
@@ -115,8 +115,8 @@ resource "aws_nat_gateway" "nat_gateway_1" {
 
   tags = {
     Name          = "nat-gateway-1"
-    "environment" = var.tag_prod,
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
@@ -126,8 +126,8 @@ resource "aws_nat_gateway" "nat_gateway_2" {
 
   tags = {
     Name          = "nat-gateway-2"
-    "environment" = var.tag_prod,
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
@@ -142,6 +142,8 @@ resource "aws_route_table" "private_route_table_1" {
 
   tags = {
     Name = "private-route-table-1"
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
@@ -155,8 +157,8 @@ resource "aws_route_table" "private_route_table_2" {
 
   tags = {
     Name          = "private-route-table-2"
-    "environment" = var.tag_prod,
-    "ambiente"    = var.tag_ambiente
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 

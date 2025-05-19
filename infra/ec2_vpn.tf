@@ -1,26 +1,26 @@
 # Criar Elastic IP
-resource "aws_eip" "vpn_production_eip" {
+resource "aws_eip" "vpn_ec2_eip" {
   domain = "vpc"
 
   tags = {
-    Name        = var.instance_name
-    Environment = "production"
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
 # Associar o Elastic IP à instância EC2
-resource "aws_eip_association" "vpn_production_eip_association" {
-  instance_id   = aws_instance.vpn_production.id
-  allocation_id = aws_eip.vpn_production_eip.id
+resource "aws_eip_association" "vpn_ec2_eip_association" {
+  instance_id   = aws_instance.vpn_ec2.id
+  allocation_id = aws_eip.vpn_ec2_eip.id
 
   # Garante que a associação só ocorra após a criação da instância EC2
-  depends_on = [aws_instance.vpn_production]
+  depends_on = [aws_instance.vpn_ec2]
 }
 
 # Criar instância EC2
-resource "aws_instance" "vpn_production" {
-  ami                  = "ami-096ea6a12ea24a797"
-  instance_type        = "t4g.micro"
+resource "aws_instance" "vpn_ec2" {
+  ami                  = var.ami_id
+  instance_type        = var.instance_type
   iam_instance_profile = aws_iam_instance_profile.instance_profile_acesso_ssm2.name
   user_data            = file("ec2_userdata.sh")
 
@@ -39,18 +39,18 @@ resource "aws_instance" "vpn_production" {
 
   tags = {
     Name        = var.instance_name
-    Environment = "production"
+    Environment = var.tag_environment
   }
 }
 
 # Associar o Elastic IP ao domínio Route 53
 resource "aws_route53_record" "vpn_record" {
-  zone_id = data.aws_route53_zone.domain_zone.zone_id  # Correção aqui para usar o data source
-  name    = "vpn.${var.domain_name}"
+  zone_id = data.aws_route53_zone.domain_zone.zone_id
+  name    = "vpn.${local.full_domain_name}"
   type    = "A"
   ttl     = 30
 
-  records = [aws_eip.vpn_production_eip.public_ip]
+  records = [aws_eip.vpn_ec2_eip.public_ip]
 
-  depends_on = [aws_eip_association.vpn_production_eip_association]
+  depends_on = [aws_eip_association.vpn_ec2_eip_association]
 }

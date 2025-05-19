@@ -14,17 +14,18 @@ data "aws_iam_policy_document" "assume_role_policy" {
 
 # Criar a role com a política de trusted entities
 resource "aws_iam_role" "role_acesso_ssm2" {
-  name               = "role-acesso-ssm2"
+  name               = var.iam_role_name
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
 
   tags = {
-    Environment = "terraform"
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
   }
 }
 
 # Criar um instance profile e associar a role
 resource "aws_iam_instance_profile" "instance_profile_acesso_ssm2" {
-  name = "instance-profile-acesso-ssm2"
+  name = var.instance_profile_name
   role = aws_iam_role.role_acesso_ssm2.name
 }
 

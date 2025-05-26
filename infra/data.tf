@@ -7,3 +7,7 @@ data "aws_route53_zone" "domain_zone" {
   name         = var.domain_name
   private_zone = false
 }
+
+data "aws_guardduty_detector" "existing" {
+  count = var.tag_environment != "production" ? 1 : 0
+}

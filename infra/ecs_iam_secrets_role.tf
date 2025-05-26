@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ecsSecretManagerAndParameterStore" {
-  name = "ecsSecretManagerAndParameterStore"
+  name = "ecsSecretManagerAndParameterStore-${var.tag_environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -17,7 +17,7 @@ resource "aws_iam_role" "ecsSecretManagerAndParameterStore" {
 
 
 resource "aws_iam_policy" "ecsSecretsAccessPolicy" {
-  name        = "ecsSecretsAccessPolicy"
+  name        = "ecsSecretsAccessPolicy-${var.tag_environment}"
   description = "Policy to allow ECS task to access specific Secrets Manager secrets and SSM parameters"
 
   policy = jsonencode({

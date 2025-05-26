@@ -1,4 +1,5 @@
 resource "aws_wafv2_web_acl" "web_acl" {
+  count       = var.tag_environment == "production" ? 1 : 0
   name        = var.waf_acl_name
   description = var.waf_description
   scope       = "REGIONAL"
@@ -10,7 +11,7 @@ resource "aws_wafv2_web_acl" "web_acl" {
   visibility_config {
     cloudwatch_metrics_enabled = true
     metric_name                = var.waf_metric_name
-    sampled_requests_enabled    = true
+    sampled_requests_enabled   = true
   }
   # Regra 1: Proteção para áreas administrativas
 
@@ -29,11 +30,11 @@ resource "aws_wafv2_web_acl" "web_acl" {
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "AWS-AWSManagedRulesAdminProtectionRuleSet"
-      sampled_requests_enabled    = true
+      sampled_requests_enabled   = true
     }
   }
-  
-    # Regra 2: Proteção contra IPs maliciosos conhecidos
+
+  # Regra 2: Proteção contra IPs maliciosos conhecidos
   rule {
     name     = "AWS-AWSManagedRulesAmazonIpReputationList"
     priority = 1
@@ -49,7 +50,7 @@ resource "aws_wafv2_web_acl" "web_acl" {
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "AWS-AWSManagedRulesAmazonIpReputationList"
-      sampled_requests_enabled    = true
+      sampled_requests_enabled   = true
     }
   }
 
@@ -69,7 +70,7 @@ resource "aws_wafv2_web_acl" "web_acl" {
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "AWS-AWSManagedRulesAnonymousIpList"
-      sampled_requests_enabled    = true
+      sampled_requests_enabled   = true
     }
   }
 
@@ -89,11 +90,11 @@ resource "aws_wafv2_web_acl" "web_acl" {
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "AWS-AWSManagedRulesCommonRuleSet"
-      sampled_requests_enabled    = true
+      sampled_requests_enabled   = true
     }
   }
-  
-    # Regra 5: Bloqueia entradas de dados conhecidamente maliciosos
+
+  # Regra 5: Bloqueia entradas de dados conhecidamente maliciosos
   rule {
     name     = "AWS-AWSManagedRulesKnownBadInputsRuleSet"
     priority = 4
@@ -109,11 +110,11 @@ resource "aws_wafv2_web_acl" "web_acl" {
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "AWS-AWSManagedRulesKnownBadInputsRuleSet"
-      sampled_requests_enabled    = true
+      sampled_requests_enabled   = true
     }
   }
 
-    # Regra 6: Proteção contra injeção SQL
+  # Regra 6: Proteção contra injeção SQL
   rule {
     name     = "AWS-AWSManagedRulesSQLiRuleSet"
     priority = 5
@@ -129,7 +130,7 @@ resource "aws_wafv2_web_acl" "web_acl" {
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "AWS-AWSManagedRulesSQLiRuleSet"
-      sampled_requests_enabled    = true
+      sampled_requests_enabled   = true
     }
   }
   # Regra 7: Proteção contra ataques baseados em Unix (sistemas e aplicativos Unix)
@@ -148,7 +149,7 @@ resource "aws_wafv2_web_acl" "web_acl" {
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "AWS-AWSManagedRulesUnixRuleSet"
-      sampled_requests_enabled    = true
+      sampled_requests_enabled   = true
     }
   }
 
@@ -160,6 +161,7 @@ resource "aws_wafv2_web_acl" "web_acl" {
 
 #Associar WAF ao ALB
 resource "aws_wafv2_web_acl_association" "alb" {
+  count        = length(aws_wafv2_web_acl.web_acl) > 0 ? 1 : 0
   resource_arn = aws_lb.alb.arn
-  web_acl_arn  = aws_wafv2_web_acl.web_acl.arn
+  web_acl_arn  = local.web_acl_arn
 }

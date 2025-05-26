@@ -9,7 +9,7 @@ resource "aws_cloudtrail" "cloudtrail_monitor" {
   is_multi_region_trail         = true
   enable_log_file_validation    = true
 
-    tags = {
+  tags = {
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
   }

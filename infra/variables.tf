@@ -200,3 +200,33 @@ variable "waf_metric_name" {
   type        = string
   description = "Nome da métrica do Web ACL para o CloudWatch"
 }
+
+variable "ecs_min_capacity" {
+  description = "Capacidade mínima do serviço ECS"
+  type        = number
+}
+
+variable "ecs_max_capacity" {
+  description = "Capacidade máxima do serviço ECS"
+  type        = number
+}
+
+variable "scale_up_cpu_threshold" {
+  description = "Limite percentual de CPU para escalonamento para cima"
+  type        = number
+}
+
+variable "scale_down_cpu_threshold" {
+  description = "Limite percentual de CPU para escalonamento para baixo"
+  type        = number
+}
+
+variable "scale_up_cooldown" {
+  description = "Cooldown (segundos) após escalonamento para cima"
+  type        = number
+}
+
+variable "scale_down_cooldown" {
+  description = "Cooldown (segundos) após escalonamento para baixo"
+  type        = number
+}

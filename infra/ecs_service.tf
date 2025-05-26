@@ -18,8 +18,8 @@ resource "aws_ecs_service" "ecs_name" {
 
   load_balancer {
     target_group_arn = aws_lb_target_group.ecs_api.arn # Referência do target group
-    container_name   = var.container_name                # Nome do container definido na task definition
-    container_port   = var.container_port                          # A porta em que o container está ouvindo
+    container_name   = var.container_name              # Nome do container definido na task definition
+    container_port   = var.container_port              # A porta em que o container está ouvindo
   }
 
   deployment_minimum_healthy_percent = 100
@@ -27,7 +27,7 @@ resource "aws_ecs_service" "ecs_name" {
 
   # Habilitar o Circuit Breaker
   deployment_circuit_breaker {
-    enable = true
+    enable   = true
     rollback = true
   }
 
@@ -37,7 +37,7 @@ resource "aws_ecs_service" "ecs_name" {
     ignore_changes = [desired_count]
   }
 
-    tags = {
+  tags = {
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
   }

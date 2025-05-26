@@ -4,7 +4,7 @@ resource "aws_vpc" "terraform_vpc" {
   tags = {
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
-    "Name"        = var.vpc_name
+    "Name"      = var.vpc_name
   }
 }
 
@@ -27,7 +27,7 @@ resource "aws_subnet" "public_subnet_1" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name          = "public-subnet-1-terraform"
+    Name        = "public-subnet-1-terraform"
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
   }
@@ -41,7 +41,7 @@ resource "aws_subnet" "public_subnet_2" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name          = "public-subnet-2-terraform"
+    Name        = "public-subnet-2-terraform"
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
   }
@@ -54,7 +54,7 @@ resource "aws_subnet" "private_subnet_1" {
   availability_zone = var.availability_zones[0]
 
   tags = {
-    Name          = "private-subnet-1-terraform"
+    Name        = "private-subnet-1-terraform"
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
   }
@@ -66,7 +66,7 @@ resource "aws_subnet" "private_subnet_2" {
   availability_zone = var.availability_zones[1]
 
   tags = {
-    Name          = "private-subnet-2-terraform"
+    Name        = "private-subnet-2-terraform"
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
   }
@@ -82,7 +82,7 @@ resource "aws_route_table" "public_route_table" {
   }
 
   tags = {
-    Name          = "public-route-table"
+    Name        = "public-route-table"
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
   }
@@ -114,7 +114,7 @@ resource "aws_nat_gateway" "nat_gateway_1" {
   subnet_id     = aws_subnet.public_subnet_1.id
 
   tags = {
-    Name          = "nat-gateway-1"
+    Name        = "nat-gateway-1"
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
   }
@@ -125,7 +125,7 @@ resource "aws_nat_gateway" "nat_gateway_2" {
   subnet_id     = aws_subnet.public_subnet_2.id
 
   tags = {
-    Name          = "nat-gateway-2"
+    Name        = "nat-gateway-2"
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
   }
@@ -141,7 +141,7 @@ resource "aws_route_table" "private_route_table_1" {
   }
 
   tags = {
-    Name = "private-route-table-1"
+    Name        = "private-route-table-1"
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
   }
@@ -156,7 +156,7 @@ resource "aws_route_table" "private_route_table_2" {
   }
 
   tags = {
-    Name          = "private-route-table-2"
+    Name        = "private-route-table-2"
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
   }

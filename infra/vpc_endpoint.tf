@@ -18,7 +18,7 @@ resource "aws_vpc_endpoint" "ecr_api" {
   tags = {
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
-    "Name"        = "ecr.api"
+    "Name"      = "ecr.api"
   }
 
 }
@@ -44,7 +44,7 @@ resource "aws_vpc_endpoint" "ecr_dkr" {
   tags = {
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
-    "Name"        = "ecr.dkr"
+    "Name"      = "ecr.dkr"
   }
 
 }
@@ -69,7 +69,73 @@ resource "aws_vpc_endpoint" "ecs" {
   tags = {
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
-    "Name"        = "ecs"
+    "Name"      = "ecs"
   }
 
+}
+
+# Endpoint SSM
+resource "aws_vpc_endpoint" "ssm" {
+  vpc_id            = aws_vpc.terraform_vpc.id
+  service_name      = "com.amazonaws.us-east-1.ssm"
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.ecs-sg.id
+  ]
+
+  subnet_ids = [
+    aws_subnet.private_subnet_1.id,
+    aws_subnet.private_subnet_2.id
+  ]
+
+  tags = {
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
+    Name        = "ssm"
+  }
+}
+
+# Endpoint SSM Messages
+resource "aws_vpc_endpoint" "ssm_messages" {
+  vpc_id            = aws_vpc.terraform_vpc.id
+  service_name      = "com.amazonaws.us-east-1.ssmmessages"
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.ecs-sg.id
+  ]
+
+  subnet_ids = [
+    aws_subnet.private_subnet_1.id,
+    aws_subnet.private_subnet_2.id
+  ]
+
+  tags = {
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
+    Name        = "ssm-messages"
+  }
+}
+
+# Endpoint Secrets Manager
+resource "aws_vpc_endpoint" "secretsmanager" {
+  vpc_id            = aws_vpc.terraform_vpc.id
+  service_name      = "com.amazonaws.us-east-1.secretsmanager"
+  vpc_endpoint_type = "Interface"
+
+  security_group_ids = [
+    aws_security_group.ecs-sg.id
+  ]
+
+  subnet_ids = [
+    aws_subnet.private_subnet_1.id,
+    aws_subnet.private_subnet_2.id
+  ]
+
+  tags = {
+    Environment = var.tag_environment
+    Ambiente    = var.tag_ambiente
+    Name        = "secretsmanager"
+  }
 }

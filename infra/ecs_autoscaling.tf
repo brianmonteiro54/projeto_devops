@@ -1,126 +1,145 @@
-# # Recurso Auto Scaling Target
-# resource "aws_appautoscaling_target" "ecs_service_target" {
-#   max_capacity       = 10
-#   min_capacity       = 2
-#   resource_id        = "service/${aws_ecs_cluster.production.name}/api-production"
-#   role_arn           = aws_iam_role.ecsTaskExecutionRole_TF.arn
-#   scalable_dimension = "ecs:service:DesiredCount"
-#   service_namespace  = "ecs"
+resource "aws_appautoscaling_target" "ecs_service" {
+  count = local.enable_production_autoscaling
 
-#   depends_on = [aws_ecs_service.api_production]
-# }
+  max_capacity       = var.ecs_max_capacity
+  min_capacity       = var.ecs_min_capacity
+  resource_id        = "service/${aws_ecs_cluster.cluster.name}/${aws_ecs_service.ecs_name.name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  service_namespace  = "ecs"
+}
 
-# # Policy de Scale-out
-# resource "aws_appautoscaling_policy" "scale_out_policy" {
-#   name               = "scale-out"
-#   service_namespace  = "ecs"
-#   resource_id        = aws_appautoscaling_target.ecs_service_target.resource_id
-#   scalable_dimension = "ecs:service:DesiredCount"
-#   policy_type        = "StepScaling"
+resource "aws_cloudwatch_metric_alarm" "cpu_high" {
+  count = local.enable_production_autoscaling
 
-#   step_scaling_policy_configuration {
-#     adjustment_type = "ChangeInCapacity"
+  alarm_name          = "${var.ecr_service_name}-cpu-high"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/ECS"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 75
+  alarm_description   = "Alarme quando CPU ultrapassa 75%."
+  dimensions = {
+    ClusterName = aws_ecs_cluster.cluster.name
+    ServiceName = aws_ecs_service.ecs_name.name
+  }
+}
 
-#     step_adjustment {
-#       scaling_adjustment         = 2
-#       metric_interval_lower_bound = 35
-#       metric_interval_upper_bound = 45
-#     }
+resource "aws_cloudwatch_metric_alarm" "cpu_low" {
+  count = local.enable_production_autoscaling
 
-#     step_adjustment {
-#       scaling_adjustment         = 4
-#       metric_interval_lower_bound = 45
-#       metric_interval_upper_bound = 55
-#     }
+  alarm_name          = "${var.ecr_service_name}-cpu-low"
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 2
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/ECS"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 25
+  alarm_description   = "Alarme quando CPU ficar abaixo de 25%."
+  dimensions = {
+    ClusterName = aws_ecs_cluster.cluster.name
+    ServiceName = aws_ecs_service.ecs_name.name
+  }
+}
 
-#     step_adjustment {
-#       scaling_adjustment         = 6
-#       metric_interval_lower_bound = 55
-#       metric_interval_upper_bound = 65
-#     }
+resource "aws_appautoscaling_policy" "scale_up_policy" {
+  count = local.enable_production_autoscaling
 
-#     step_adjustment {
-#       scaling_adjustment         = 8
-#       metric_interval_lower_bound = 65
-#       # O último ajuste não tem limite superior
-#     }
+  name              = "scale-up-policy"
+  service_namespace = "ecs"
 
-#     cooldown = 60
-#   }
-# }
+  resource_id        = "service/${var.ecs_cluster_name}/${var.ecr_service_name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  policy_type        = "StepScaling"
 
-# # Alarme para CPU utilization - Scale-out
-# resource "aws_cloudwatch_metric_alarm" "scale_out_alarm" {
-#   alarm_name          = "scale-out-alarm"
-#   comparison_operator = "GreaterThanOrEqualToThreshold"
-#   evaluation_periods  = 1
-#   metric_name         = "CPUUtilization"
-#   namespace           = "AWS/ECS"
-#   period              = 300  # 5 minutos
-#   statistic           = "Maximum"
-#   threshold           = 30
-#   alarm_actions       = [aws_appautoscaling_policy.scale_out_policy.arn]
-#   dimensions = {
-#     ClusterName = aws_ecs_cluster.production.name
-#     ServiceName = "api-production"
-#   }
-# }
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = var.scale_up_cooldown
+    metric_aggregation_type = "Average"
 
-# >>>>>>>>>> ATEÇÃO SCALE-IN não esta funcionando <<<<<<<<<<<<<<<<<<<<<<
+    step_adjustment {
+      scaling_adjustment          = 1
+      metric_interval_lower_bound = 0
+      metric_interval_upper_bound = 10
+    }
 
-# # Policy de Scale-in
-# resource "aws_appautoscaling_policy" "scale_in_policy" {
-#   name                   = "scale-in"
-#   service_namespace      = "ecs"
-#   resource_id            = aws_appautoscaling_target.ecs_service_target.resource_id
-#   scalable_dimension     = "ecs:service:DesiredCount"
-#   policy_type            = "StepScaling"
+    step_adjustment {
+      scaling_adjustment          = 2
+      metric_interval_lower_bound = 10
 
-#   step_scaling_policy_configuration {
-#     adjustment_type = "ChangeInCapacity"
-#     cooldown        = 60
+    }
+  }
+}
 
-#     step_adjustment {
-#       scaling_adjustment          = -4
-#       metric_interval_lower_bound = 0
-#       metric_interval_upper_bound = 10
-#     }
+resource "aws_appautoscaling_policy" "scale_down_policy" {
+  count = local.enable_production_autoscaling
 
-#     step_adjustment {
-#       scaling_adjustment          = -2
-#       metric_interval_lower_bound = 10
-#       metric_interval_upper_bound = 20
-#     }
+  name              = "scale-down-policy"
+  service_namespace = "ecs"
 
-#     step_adjustment {
-#       scaling_adjustment          = -1
-#       metric_interval_lower_bound = 20
-#       metric_interval_upper_bound = 30
-#     }
+  resource_id        = "service/${var.ecs_cluster_name}/${var.ecr_service_name}"
+  scalable_dimension = "ecs:service:DesiredCount"
+  policy_type        = "StepScaling"
 
-#     step_adjustment {
-#       scaling_adjustment          = -1
-#       metric_interval_lower_bound = 30
-#       # O último ajuste não tem limite superior
-#     }
-#   }
-# }
+  step_scaling_policy_configuration {
+    adjustment_type         = "ChangeInCapacity"
+    cooldown                = var.scale_down_cooldown
+    metric_aggregation_type = "Average"
+
+    step_adjustment {
+      scaling_adjustment          = -1
+      metric_interval_upper_bound = 0
+      metric_interval_lower_bound = -10
+    }
+
+    step_adjustment {
+      scaling_adjustment          = -2
+      metric_interval_upper_bound = -10
+
+    }
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {
+  count = local.enable_production_autoscaling
+
+  alarm_name          = "${var.ecr_service_name}-scale-up-alarm"
+  alarm_description   = "Dispara escalonamento para cima."
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/ECS"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 75
+  dimensions = {
+    ClusterName = aws_ecs_cluster.cluster.name
+    ServiceName = aws_ecs_service.ecs_name.name
+  }
 
 
-# # Alarme para CPU utilization - Scale-in
-# resource "aws_cloudwatch_metric_alarm" "scale_in_alarm" {
-#   alarm_name          = "scale-in-alarm"
-#   comparison_operator = "LessThanOrEqualToThreshold"
-#   evaluation_periods  = 1
-#   metric_name         = "CPUUtilization"
-#   namespace           = "AWS/ECS"
-#   period              = 300
-#   statistic           = "Average"
-#   threshold           = 40
-#   alarm_actions       = [aws_appautoscaling_policy.scale_in_policy.arn]
-#   dimensions = {
-#     ClusterName = aws_ecs_cluster.production.name
-#     ServiceName = "api-production"
-#   }
-# }
+  alarm_actions = [aws_appautoscaling_policy.scale_up_policy[0].arn]
+}
 
+resource "aws_cloudwatch_metric_alarm" "scale_down_alarm" {
+  count = local.enable_production_autoscaling
+
+  alarm_name          = "${var.ecr_service_name}-scale-down-alarm"
+  alarm_description   = "Dispara escalonamento para baixo."
+  comparison_operator = "LessThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "CPUUtilization"
+  namespace           = "AWS/ECS"
+  period              = 60
+  statistic           = "Average"
+  threshold           = 25
+  dimensions = {
+    ClusterName = aws_ecs_cluster.cluster.name
+    ServiceName = aws_ecs_service.ecs_name.name
+  }
+
+
+  alarm_actions = [aws_appautoscaling_policy.scale_down_policy[0].arn]
+}

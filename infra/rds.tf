@@ -31,10 +31,10 @@ resource "aws_db_instance" "rds" {
   multi_az            = var.rds_multi-az #  utiliza multi-AZ 
   publicly_accessible = false            # Não acessível publicamente
   #availability_zone        = "us-east-1a"         # Zona de disponibilidade
-  parameter_group_name     = var.rds_parameter_group # Grupo de parâmetros do PostgreSQL
-  skip_final_snapshot      = true                    # Não fazer snapshot final
-  delete_automated_backups = false                   # deletar os snapshot automatico
-  deletion_protection      = false                   # protenção contra deleção
+  parameter_group_name     = var.rds_parameter_group          # Grupo de parâmetros do PostgreSQL
+  skip_final_snapshot      = true                             # Não fazer snapshot final
+  delete_automated_backups = var.rds_delete_automated_backups # deletar os snapshot automatico
+  deletion_protection      = false                            # protenção contra deleção
 
   tags = {
     Environment = var.tag_environment

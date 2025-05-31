@@ -1,0 +1,39 @@
+name: "Production Environment CI/CD"
+
+on:
+  push:
+    branches:
+      - main
+  repository_dispatch:
+    types: [deploy-production]
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  terraform_production:
+    name: "Terraform PROD"
+    uses: ./.github/workflows/terraform.yml
+    with:
+      environment: prod
+      aws-statefile-s3-bucket: "brian-terraform"
+    secrets:
+      AWS_ASSUME_ROLE_ARN: ${{ secrets.AWS_ASSUME_ROLE_ARN }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+
+  deploy_app_prod:
+    name: "Deploy Application PROD"
+    needs: terraform_production # Garante que este trabalho seja executado somente após o sucesso do terraform_production
+    if: needs.terraform_production.result == 'success' && needs.terraform_production.outputs.destroy_active == 'false'
+    uses: brianmonteiro54/devops-template/.github/workflows/bundle.yml@v1.4
+    with:
+      IMAGE_NAME: api-production
+      TASK_NAME: api-production
+      CONTAINER_NAME: api-production
+      ECS_SERVICE: api-production
+      ECS_CLUSTER: production
+    secrets:
+      AWS_ASSUME_ROLE_ARN: ${{ secrets.AWS_ASSUME_ROLE_ARN }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      PRIVATE_KEY: ${{ secrets.PRIVATE_KEY }}

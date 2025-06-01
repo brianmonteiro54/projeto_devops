@@ -15,6 +15,7 @@ rds_instance_type  = "db.t4g.micro"
 cloudtrail_name           = "cloudtrail-monitor-dev"
 cloudtrail_s3_bucket_prefix = "cloudtrail-auditoria-dev"
 cloudtrail_s3_key_prefix  = "dev"
+create_cloudtrail = false
 iam_role_name          = "role-acesso-ssm2-dev"
 instance_profile_name  = "instance-profile-acesso-ssm2-dev"
 ami_id            = "ami-096ea6a12ea24a797"

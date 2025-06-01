@@ -130,6 +130,11 @@ variable "cloudtrail_s3_key_prefix" {
   description = "Prefixo da chave dentro do bucket S3 para armazenar logs do CloudTrail"
 }
 
+variable "create_cloudtrail" {
+  description = "Flag para controlar a criação do CloudTrail. Defina como true para criar o CloudTrail"
+  type    = bool
+}
+
 variable "iam_role_name" {
   type        = string
   description = "Nome da IAM Role para EC2"

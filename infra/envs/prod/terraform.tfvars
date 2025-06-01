@@ -15,6 +15,7 @@ rds_instance_type  = "db.t4g.small"
 cloudtrail_name           = "cloudtrail-monitor-prod"
 cloudtrail_s3_bucket_prefix = "cloudtrail-auditoria-prod"
 cloudtrail_s3_key_prefix  = "prod"
+create_cloudtrail = true
 iam_role_name          = "role-acesso-ssm2-prod"
 instance_profile_name  = "instance-profile-acesso-ssm2-prod"
 ami_id            = "ami-096ea6a12ea24a797"

@@ -2,46 +2,50 @@
 
 ## Objetivo
 
-O objetivo deste desafio é desenvolver um ambiente de produção robusto e escalável para uma API Node.js. Este projeto é uma oportunidade para demonstrar habilidades em áreas fundamentais, como alta disponibilidade, segurança, contêinerização, automação e provisionamento de infraestrutura.
+Este desafio consiste em desenvolver um ambiente de produção robusto e escalável para uma API Node.js, demonstrando habilidades em alta disponibilidade, segurança, contêinerização, automação e provisionamento de infraestrutura.
 
-Este projeto utiliza Terraform para provisionar e configurar a infraestrutura necessária para um ambiente de produção e escalável para uma API Node.js. Toda a infraestrutura é definida no diretório **iac**
+A infraestrutura é provisionada via **Terraform**, com automação completa utilizando pipelines no **GitHub Actions** para garantir consistência e agilidade no deployment.
+
+Toda a infraestrutura está definida no diretório **infra** e provisionada automaticamente via pipeline CI/CD.
 
 ## Requisitos
 
 ### 1. Alta Disponibilidade e Escalabilidade
-- Implementar uma arquitetura que garanta a capacidade de escalar a API de forma eficiente, mantendo alta disponibilidade para suportar aumentos de tráfego.
-- Utilizar técnicas de balanceamento de carga para distribuir o tráfego entre múltiplas instâncias da aplicação.
+- Arquitetura capaz de escalar a API eficientemente e manter alta disponibilidade.
+- Uso de balanceador de carga para distribuir o tráfego entre múltiplas instâncias.
 
 ### 2. Segurança
-- Adotar boas práticas de segurança na infraestrutura e no código da API.
-- Implementar o uso de **Security Groups** para controlar o tráfego de rede.
-- Configurar **IAM Roles** para gerenciar permissões de acesso de forma segura.
-- Garantir o gerenciamento seguro de segredos e credenciais.
+- Práticas de segurança na infraestrutura e código da API.
+- Configuração de **Security Groups** para controlar o tráfego de rede.
+- Gerenciamento seguro de permissões com **IAM Roles** via **AWS Assume Role (OIDC)**.
+- Armazenamento seguro de segredos e credenciais.
 
 ### 3. Contêinerização com Docker
-- Criar um **Dockerfile** otimizado para a aplicação, seguindo as melhores práticas de contêinerização.
-- Configurar imagens que garantam eficiência e leveza no deployment.
+- Dockerfile otimizado para construção de imagem leve e eficiente.
+- Práticas recomendadas para contêineres e deployment.
 
 ### 4. Pipeline Automatizado
-- Configurar um pipeline de **CI/CD** para automatizar o processo de build, teste e deployment da aplicação.
-- Assegurar um ciclo de vida ágil e controlado para o desenvolvimento e a entrega de novas funcionalidades.
+- Pipeline de **CI/CD** via **GitHub Actions** para build, teste e deployment automatizados.
+- Workflow para provisionamento da infraestrutura com **Terraform** e deploy da aplicação integrado.
 
 ### 5. Infraestrutura com Terraform
-- Provisionar todos os recursos de infraestrutura (como **ECS Fargate**, **Load Balancer**, **RDS**, etc.) utilizando **Terraform**.
-- Garantir que todos os recursos sejam criados de forma idempotente e reutilizável, facilitando a gestão e manutenção da infraestrutura.
+- Provisionamento idempotente e reutilizável de recursos (ECS Fargate, Load Balancer, RDS, etc.) usando **Terraform**.
+- Toda a infraestrutura criada e atualizada automaticamente pelo pipeline.
 
 ### 6. Conexões Seguras
-- Certificar-se de que toda a comunicação entre os recursos (API, banco de dados, serviços internos) ocorra de forma segura.
-- Implementar o uso de certificados **SSL** e seguir outras práticas recomendadas de segurança para proteger os dados em trânsito.
+- Comunicação segura entre API, banco e serviços internos.
+- Uso de certificados **SSL** para proteger dados em trânsito.
 
-## Configuração do Pipeline
+## Configuração do Pipeline CI/CD
 
-Caso você clone este projeto e deseje utilizar um pipeline CI/CD, é necessário configurar variáveis de ambiente seguras no GitHub Secrets para armazenar credenciais. As variáveis necessárias são:
+Para utilizar o pipeline automatizado no GitHub Actions, configure os seguintes **GitHub Secrets** no seu repositório:
 
-- `AWS_ACCESS_KEY_ID`
-- `AWS_SECRET_ACCESS_KEY`
-- `AWS_REGION`
-- `PRIVATE_KEY` (colocar a chave do certificado SSL)
+- `AWS_ASSUME_ROLE_ARN` — ARN da role IAM que o workflow irá assumir via OIDC (OpenID Connect).  
+- `AWS_REGION` — Região AWS onde os recursos serão provisionados.  
+- `PRIVATE_KEY` — Chave privada do certificado SSL para conexões seguras.
+
+**Observação:**  
+Este método elimina a necessidade de armazenar chaves de acesso estáticas (`AWS_ACCESS_KEY_ID` e `AWS_SECRET_ACCESS_KEY`), utilizando autenticação temporária via token OIDC para maior segurança.
 
 # simple-api
 
@@ -56,7 +60,6 @@ O comando para iniciar a API é **npm run start**
 | --- | --- | --- |
 / | GET | Retorna uma mensagem estática.
 /connect | GET | Realiza a conexão com o banco e retorna a versão da engine.
-
 
 ## Variáveis de Ambiente
 | Nome | Description  | Padrão |

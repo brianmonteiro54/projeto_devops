@@ -1,4 +1,4 @@
-name: "Production Environment CI/CD"
+name: "Terraform Infrastructure Provisioning - Production"
 
 on:
   push:
@@ -14,7 +14,7 @@ permissions:
 jobs:
   terraform_production:
     name: "Terraform PROD"
-    uses: ./.github/workflows/terraform.yml
+    uses: brianmonteiro54/devops-template/.github/workflows/terraform.yml@v1.5
     with:
       environment: prod
       aws-statefile-s3-bucket: "brian-terraform"
@@ -26,7 +26,7 @@ jobs:
     name: "Deploy Application PROD"
     needs: terraform_production # Garante que este trabalho seja executado somente após o sucesso do terraform_production
     if: needs.terraform_production.result == 'success' && needs.terraform_production.outputs.destroy_active == 'false'
-    uses: brianmonteiro54/devops-template/.github/workflows/bundle.yml@v1.4
+    uses: brianmonteiro54/devops-template/.github/workflows/bundle.yml@v1.5
     with:
       IMAGE_NAME: api-production
       TASK_NAME: api-production

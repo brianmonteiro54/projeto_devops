@@ -71,6 +71,7 @@ resource "aws_appautoscaling_policy" "scale_up_policy" {
 
     }
   }
+  depends_on = [aws_appautoscaling_target.ecs_service]
 }
 
 resource "aws_appautoscaling_policy" "scale_down_policy" {
@@ -100,6 +101,7 @@ resource "aws_appautoscaling_policy" "scale_down_policy" {
 
     }
   }
+  depends_on = [aws_appautoscaling_target.ecs_service]
 }
 
 resource "aws_cloudwatch_metric_alarm" "scale_up_alarm" {

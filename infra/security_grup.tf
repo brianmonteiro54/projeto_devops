@@ -7,38 +7,38 @@ resource "aws_security_group" "Pritunl_VPN" {
   tags = {
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
-    "Name"        = "Pritunl_VPN"
+    "Name"      = "Pritunl_VPN"
   }
 }
 
 #Regra de entrada security group da EC2
 resource "aws_vpc_security_group_ingress_rule" "ingress_80_ec2" {
-  description                  = "Permitir HTTP Full"
-  security_group_id            = aws_security_group.Pritunl_VPN.id
-  cidr_ipv4 = "0.0.0.0/0"
-  from_port                    = 80
-  ip_protocol                  = "tcp"
-  to_port                      = 80
+  description       = "Permitir HTTP Full"
+  security_group_id = aws_security_group.Pritunl_VPN.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 80
+  ip_protocol       = "tcp"
+  to_port           = 80
 }
 
 #Regra de entrada security group da EC2
 resource "aws_vpc_security_group_ingress_rule" "ingress_443_ec2" {
-  description                  = "Permitir HTTPs Full"
-  security_group_id            = aws_security_group.Pritunl_VPN.id
-  cidr_ipv4 = "0.0.0.0/0"
-  from_port                    = 443
-  ip_protocol                  = "tcp"
-  to_port                      = 443
+  description       = "Permitir HTTPs Full"
+  security_group_id = aws_security_group.Pritunl_VPN.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 443
+  ip_protocol       = "tcp"
+  to_port           = 443
 }
 
 #Regra de entrada security group da EC2
 resource "aws_vpc_security_group_ingress_rule" "ingress_5050_ec2" {
-  description                  = "Permitir HTTPs Full"
-  security_group_id            = aws_security_group.Pritunl_VPN.id
-  cidr_ipv4 = "0.0.0.0/0"
-  from_port                    = 5050
-  ip_protocol                  = "udp"
-  to_port                      = 5050
+  description       = "Permitir HTTPs Full"
+  security_group_id = aws_security_group.Pritunl_VPN.id
+  cidr_ipv4         = "0.0.0.0/0"
+  from_port         = 5050
+  ip_protocol       = "udp"
+  to_port           = 5050
 }
 
 #Regra de aida ada security group da EC2
@@ -60,7 +60,7 @@ resource "aws_security_group" "rds_db" {
   tags = {
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
-    "Name"        = "rds_db"
+    "Name"      = "rds_db"
   }
 }
 
@@ -101,7 +101,7 @@ resource "aws_security_group" "alb" {
   tags = {
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
-    "Name"        = "api_alb"
+    "Name"      = "api_alb"
   }
 }
 #regra de entrada do ALB
@@ -142,7 +142,7 @@ resource "aws_security_group" "ecs-sg" {
   tags = {
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
-    "Name"        = "api_ecs"
+    "Name"      = "api_ecs"
 
   }
 }

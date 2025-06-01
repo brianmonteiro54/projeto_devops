@@ -130,6 +130,11 @@ variable "cloudtrail_s3_key_prefix" {
   description = "Prefixo da chave dentro do bucket S3 para armazenar logs do CloudTrail"
 }
 
+variable "create_cloudtrail" {
+  description = "Flag para controlar a criação do CloudTrail. Defina como true para criar o CloudTrail"
+  type    = bool
+}
+
 variable "iam_role_name" {
   type        = string
   description = "Nome da IAM Role para EC2"
@@ -199,4 +204,34 @@ variable "waf_description" {
 variable "waf_metric_name" {
   type        = string
   description = "Nome da métrica do Web ACL para o CloudWatch"
+}
+
+variable "ecs_min_capacity" {
+  description = "Capacidade mínima do serviço ECS"
+  type        = number
+}
+
+variable "ecs_max_capacity" {
+  description = "Capacidade máxima do serviço ECS"
+  type        = number
+}
+
+variable "scale_up_cpu_threshold" {
+  description = "Limite percentual de CPU para escalonamento para cima"
+  type        = number
+}
+
+variable "scale_down_cpu_threshold" {
+  description = "Limite percentual de CPU para escalonamento para baixo"
+  type        = number
+}
+
+variable "scale_up_cooldown" {
+  description = "Cooldown (segundos) após escalonamento para cima"
+  type        = number
+}
+
+variable "scale_down_cooldown" {
+  description = "Cooldown (segundos) após escalonamento para baixo"
+  type        = number
 }

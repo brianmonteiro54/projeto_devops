@@ -4,11 +4,11 @@ resource "aws_acm_certificate" "domain_cert" {
   validation_method = "DNS"
 
   subject_alternative_names = [
-    "*.${var.domain_name}"  # Adiciona o domínio wildcard
+    "*.${var.domain_name}" # Adiciona o domínio wildcard
   ]
 
   tags = {
-    "Name"        = var.domain_name
+    "Name"      = var.domain_name
     Environment = var.tag_environment
     Ambiente    = var.tag_ambiente
   }

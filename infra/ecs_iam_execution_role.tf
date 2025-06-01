@@ -1,5 +1,5 @@
 resource "aws_iam_role" "ecsTaskExecutionRole_TF" {
-  name = "ecsTaskExecutionRole_TF"
+  name = "ecsTaskExecutionRole_TF-${var.tag_environment}"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17"
@@ -16,7 +16,7 @@ resource "aws_iam_role" "ecsTaskExecutionRole_TF" {
 }
 
 resource "aws_iam_policy" "cloudwatchLogsPolicy" {
-  name        = "cloudwatchLogsPolicy"
+  name        = "cloudwatchLogsPolicy-${var.tag_environment}"
   description = "Policy to allow ECS tasks to write logs to CloudWatch"
 
   policy = jsonencode({
